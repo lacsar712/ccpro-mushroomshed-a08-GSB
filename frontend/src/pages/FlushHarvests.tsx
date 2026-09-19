@@ -92,6 +92,7 @@ export default function FlushHarvests() {
               {(r) => (
                 <option value={String(r.id)}>
                   {r.roomCode} · {r.species}
+                  {r.activeSanitizeOrderId != null ? '（消杀中，禁采收）' : ''}
                 </option>
               )}
             </For>

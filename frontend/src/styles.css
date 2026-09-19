@@ -294,6 +294,33 @@ th {
   color: var(--mushroom-brown);
 }
 
+.badge.so-open {
+  background: #e3ecf7;
+  color: #2f5b8a;
+}
+
+.badge.so-doing {
+  background: #fff3e0;
+  color: var(--warn);
+}
+
+.badge.so-done {
+  background: #dceee0;
+  color: #2a6b3f;
+}
+
+.badge.so-void {
+  background: #ede8e4;
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.row-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
 .login-page {
   min-height: 100vh;
   display: grid;

@@ -5,6 +5,7 @@ from app.database import SessionLocal
 from app.models.climate_log import ClimateLog
 from app.models.flush_harvest import FlushHarvest
 from app.models.room import Room
+from app.models.sanitize_order import SanitizeOrder
 from app.models.shed import Shed
 from app.models.user import User
 
@@ -134,6 +135,40 @@ def seed() -> None:
                         weight_kg=55.2,
                         grade="A",
                         operator_name="出菇员",
+                    ),
+                    # r4 消杀期间（startedAt 之后）的环境记录，使 o2 可完工
+                    ClimateLog(
+                        room_id=r4.id,
+                        recorded_at=now - timedelta(hours=1),
+                        temp_c=15.4,
+                        humidity_pct=70,
+                        co2_ppm=610.0,
+                        notes="消杀期间环境监测",
+                    ),
+                ]
+            )
+
+            # 消杀工单：开工（open→doing）会把 Room 置为 sanitize，seed 保持一致
+            r2.status = "sanitize"
+            db.add_all(
+                [
+                    # doing 且开工后无环境记录 → 无法 done（409）
+                    SanitizeOrder(
+                        room_id=r2.id,
+                        method="chemical",
+                        status="doing",
+                        operator_name="场长",
+                        planned_at=now - timedelta(hours=5),
+                        started_at=now - timedelta(hours=3),
+                    ),
+                    # doing 且开工后已有环境记录 → 可 done
+                    SanitizeOrder(
+                        room_id=r4.id,
+                        method="uv",
+                        status="doing",
+                        operator_name="出菇员",
+                        planned_at=now - timedelta(hours=4),
+                        started_at=now - timedelta(hours=2),
                     ),
                 ]
             )

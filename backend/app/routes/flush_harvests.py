@@ -5,6 +5,7 @@ from marshmallow import ValidationError
 from app.database import SessionLocal
 from app.models.flush_harvest import FlushHarvest
 from app.models.room import Room
+from app.sanitize_rules import ConflictError, ensure_harvest_allowed
 from app.schemas.flush_harvest import FlushHarvestCreateSchema, FlushHarvestOutSchema
 from app.utils import validation_error_response
 
@@ -42,6 +43,10 @@ def create_flush_harvest():
         room = db.query(Room).filter(Room.id == data["room_id"]).first()
         if not room:
             return jsonify({"detail": "出菇室不存在"}), 400
+        try:
+            ensure_harvest_allowed(db, room.id)
+        except ConflictError as err:
+            return jsonify({"detail": str(err)}), 409
         item = FlushHarvest(
             room_id=data["room_id"],
             harvested_at=data["harvested_at"],
