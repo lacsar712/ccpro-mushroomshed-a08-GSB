@@ -1,5 +1,7 @@
 export type RoomStatus = 'fruiting' | 'idle' | 'sanitize'
 export type HarvestGrade = 'A' | 'B' | 'C'
+export type SanitizeMethod = 'uv' | 'chemical'
+export type SanitizeStatus = 'open' | 'doing' | 'done' | 'void'
 
 export interface Shed {
   id: number
@@ -15,6 +17,7 @@ export interface Room {
   species: string
   capacityBags: number
   status: RoomStatus
+  activeSanitizeOrderId?: number | null
 }
 
 export interface ClimateLog {
@@ -35,6 +38,17 @@ export interface FlushHarvest {
   weightKg: number
   grade: HarvestGrade
   operatorName: string
+}
+
+export interface SanitizeOrder {
+  id: number
+  roomId: number
+  method: SanitizeMethod
+  status: SanitizeStatus
+  operatorName: string
+  plannedAt: string
+  startedAt?: string | null
+  finishedAt?: string | null
 }
 
 export interface DashboardStats {

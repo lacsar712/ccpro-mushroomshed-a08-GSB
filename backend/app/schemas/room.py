@@ -19,3 +19,4 @@ class RoomOutSchema(Schema):
     species = fields.Str()
     capacity_bags = fields.Int(data_key="capacityBags")
     status = fields.Str()
+    active_sanitize_order_id = fields.Int(allow_none=True, data_key="activeSanitizeOrderId")

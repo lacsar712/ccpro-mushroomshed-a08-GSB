@@ -5,6 +5,7 @@ from marshmallow import ValidationError
 from app.database import SessionLocal
 from app.models.flush_harvest import FlushHarvest
 from app.models.room import Room
+from app.sanitize import get_active_order
 from app.schemas.flush_harvest import FlushHarvestCreateSchema, FlushHarvestOutSchema
 from app.utils import validation_error_response
 
@@ -42,6 +43,17 @@ def create_flush_harvest():
         room = db.query(Room).filter(Room.id == data["room_id"]).first()
         if not room:
             return jsonify({"detail": "出菇室不存在"}), 400
+        active_order = get_active_order(db, room.id)
+        if active_order:
+            return (
+                jsonify(
+                    {
+                        "detail": f"该出菇室存在进行中的消杀工单 #{active_order.id}"
+                        f"（{active_order.status}），禁止新建采收"
+                    }
+                ),
+                409,
+            )
         item = FlushHarvest(
             room_id=data["room_id"],
             harvested_at=data["harvested_at"],

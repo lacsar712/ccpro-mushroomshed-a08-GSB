@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from app.database import SessionLocal
 from app.models.room import Room
 from app.models.shed import Shed
+from app.sanitize import get_active_order_map
 from app.schemas.room import RoomCreateSchema, RoomOutSchema
 from app.utils import validation_error_response
 
@@ -26,6 +27,9 @@ def list_rooms():
         if shed_id is not None:
             q = q.filter(Room.shed_id == shed_id)
         rows = q.order_by(Room.id).all()
+        active_map = get_active_order_map(db, [r.id for r in rows])
+        for r in rows:
+            r.active_sanitize_order_id = active_map.get(r.id)
         return jsonify(out_many.dump(rows))
     finally:
         db.close()

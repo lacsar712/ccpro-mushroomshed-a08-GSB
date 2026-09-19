@@ -141,6 +141,7 @@ export default function Rooms() {
               <th>品种</th>
               <th>容量</th>
               <th>状态</th>
+              <th>消杀工单</th>
               <th />
             </tr>
           </thead>
@@ -155,6 +156,13 @@ export default function Rooms() {
                   <td>{r.capacityBags}</td>
                   <td>
                     <span class={statusBadge(r.status)}>{r.status}</span>
+                  </td>
+                  <td>
+                    {r.activeSanitizeOrderId ? (
+                      <span class="badge doing">进行中 #{r.activeSanitizeOrderId}</span>
+                    ) : (
+                      '—'
+                    )}
                   </td>
                   <td>
                     <button type="button" class="btn ghost" onClick={() => remove(r.id)}>
